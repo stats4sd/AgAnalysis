@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Analysis of Common Agricultural Designs in R</title>
+  <meta name="description" content="A series of guidance, tutorials and examples for dealing with the data analysis of experiments following common agricultural designs using R and RStudio">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Analysis of Common Agricultural Designs in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="A series of guidance, tutorials and examples for dealing with the data analysis of experiments following common agricultural designs using R and RStudio" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Analysis of Common Agricultural Designs in R" />
+  
+  <meta name="twitter:description" content="A series of guidance, tutorials and examples for dealing with the data analysis of experiments following common agricultural designs using R and RStudio" />
+  
+
+<meta name="author" content="Sam Dumble">
+
+
+<meta name="date" content="2018-11-14">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="adjusting-for-covariates.html">
+<link rel="next" href="multi-environment-trial-analysis.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> Introduction</a><ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#general-structure-r-syntax"><i class="fa fa-check"></i><b>2.1</b> General Structure: R Syntax</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="intro.html"><a href="intro.html#step-1-load-libraries"><i class="fa fa-check"></i><b>2.1.1</b> Step 1: Load Libraries</a></li>
+<li class="chapter" data-level="2.1.2" data-path="intro.html"><a href="intro.html#step-2-import-data"><i class="fa fa-check"></i><b>2.1.2</b> Step 2: Import Data</a></li>
+<li class="chapter" data-level="2.1.3" data-path="intro.html"><a href="intro.html#step-3-check-and-update-data"><i class="fa fa-check"></i><b>2.1.3</b> Step 3: Check and update data</a></li>
+<li class="chapter" data-level="2.1.4" data-path="intro.html"><a href="intro.html#step-4.-explore-data"><i class="fa fa-check"></i><b>2.1.4</b> Step 4. Explore data</a></li>
+<li class="chapter" data-level="2.1.5" data-path="intro.html"><a href="intro.html#step-5.-specify-a-model-for-data"><i class="fa fa-check"></i><b>2.1.5</b> Step 5. Specify a model for data</a></li>
+<li class="chapter" data-level="2.1.6" data-path="intro.html"><a href="intro.html#step-6.-check-the-model"><i class="fa fa-check"></i><b>2.1.6</b> Step 6. Check the model</a></li>
+<li class="chapter" data-level="2.1.7" data-path="intro.html"><a href="intro.html#step-7.-interpret-the-model"><i class="fa fa-check"></i><b>2.1.7</b> Step 7. Interpret the model</a></li>
+<li class="chapter" data-level="2.1.8" data-path="intro.html"><a href="intro.html#step-8.-present-the-results-from-the-model"><i class="fa fa-check"></i><b>2.1.8</b> Step 8. Present the results from the model</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#general-structure-explanation-of-each-step"><i class="fa fa-check"></i><b>2.2</b> General Structure: Explanation of Each Step</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="intro.html"><a href="intro.html#step-1-load-libraries-1"><i class="fa fa-check"></i><b>2.2.1</b> Step 1: Load Libraries</a></li>
+<li class="chapter" data-level="2.2.2" data-path="intro.html"><a href="intro.html#step-2-import-data-1"><i class="fa fa-check"></i><b>2.2.2</b> Step 2: Import Data</a></li>
+<li class="chapter" data-level="2.2.3" data-path="intro.html"><a href="intro.html#step-3-check-and-update-data-1"><i class="fa fa-check"></i><b>2.2.3</b> Step 3: Check and update data</a></li>
+<li class="chapter" data-level="2.2.4" data-path="intro.html"><a href="intro.html#step-4.-explore-data-1"><i class="fa fa-check"></i><b>2.2.4</b> Step 4. Explore data</a></li>
+<li class="chapter" data-level="2.2.5" data-path="intro.html"><a href="intro.html#step-5.-specify-a-model-for-data-1"><i class="fa fa-check"></i><b>2.2.5</b> Step 5. Specify a model for data</a></li>
+<li class="chapter" data-level="2.2.6" data-path="intro.html"><a href="intro.html#step-6.-check-the-model-1"><i class="fa fa-check"></i><b>2.2.6</b> Step 6. Check the model</a></li>
+<li class="chapter" data-level="2.2.7" data-path="intro.html"><a href="intro.html#step-7.-interpret-the-model-1"><i class="fa fa-check"></i><b>2.2.7</b> Step 7. Interpret the model</a></li>
+<li class="chapter" data-level="2.2.8" data-path="intro.html"><a href="intro.html#step-8.-present-the-results-from-the-model-1"><i class="fa fa-check"></i><b>2.2.8</b> Step 8. Present the results from the model</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#other-resources"><i class="fa fa-check"></i><b>2.3</b> Other resources</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html"><i class="fa fa-check"></i><b>3</b> Randomised Complete Block Design (RCBD)</a><ul>
+<li class="chapter" data-level="3.1" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#about-the-data"><i class="fa fa-check"></i><b>3.1</b> About the data</a></li>
+<li class="chapter" data-level="3.2" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#section-1-steps-in-analysis-using-r"><i class="fa fa-check"></i><b>3.2</b> Section 1: Steps in analysis using R</a></li>
+<li class="chapter" data-level="3.3" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#section-2-explanation-of-steps"><i class="fa fa-check"></i><b>3.3</b> Section 2: Explanation of Steps</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#install-r-packages-needed"><i class="fa fa-check"></i><b>3.3.1</b> 1. Install R packages needed</a></li>
+<li class="chapter" data-level="3.3.2" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#import-data"><i class="fa fa-check"></i><b>3.3.2</b> 2. Import data</a></li>
+<li class="chapter" data-level="3.3.3" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#check-and-update-data"><i class="fa fa-check"></i><b>3.3.3</b> 3. Check and update data</a></li>
+<li class="chapter" data-level="3.3.4" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#explore-data"><i class="fa fa-check"></i><b>3.3.4</b> 4. Explore data</a></li>
+<li class="chapter" data-level="3.3.5" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#specify-a-model-for-data"><i class="fa fa-check"></i><b>3.3.5</b> 5. Specify a model for data</a></li>
+<li class="chapter" data-level="3.3.6" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#check-the-model"><i class="fa fa-check"></i><b>3.3.6</b> 6. Check the model</a></li>
+<li class="chapter" data-level="3.3.7" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#interpret-model"><i class="fa fa-check"></i><b>3.3.7</b> 7. Interpret Model</a></li>
+<li class="chapter" data-level="3.3.8" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#present-the-results-from-the-model"><i class="fa fa-check"></i><b>3.3.8</b> 8. Present the results from the model</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="randomised-complete-block-design-rcbd.html"><a href="randomised-complete-block-design-rcbd.html#section-3-methodological-principles"><i class="fa fa-check"></i><b>3.4</b> Section 3 – Methodological Principles</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="split-plot-designs.html"><a href="split-plot-designs.html"><i class="fa fa-check"></i><b>4</b> Split Plot Designs</a><ul>
+<li class="chapter" data-level="4.1" data-path="split-plot-designs.html"><a href="split-plot-designs.html#about-the-data-1"><i class="fa fa-check"></i><b>4.1</b> About the data</a></li>
+<li class="chapter" data-level="4.2" data-path="split-plot-designs.html"><a href="split-plot-designs.html#section-1-steps-in-analysis-using-r-1"><i class="fa fa-check"></i><b>4.2</b> Section 1: Steps in analysis using R</a></li>
+<li class="chapter" data-level="4.3" data-path="split-plot-designs.html"><a href="split-plot-designs.html#section-2-explanation-of-steps-1"><i class="fa fa-check"></i><b>4.3</b> Section 2: Explanation of Steps</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="split-plot-designs.html"><a href="split-plot-designs.html#install-r-packages-needed-1"><i class="fa fa-check"></i><b>4.3.1</b> 1. Install R packages needed</a></li>
+<li class="chapter" data-level="4.3.2" data-path="split-plot-designs.html"><a href="split-plot-designs.html#import-data-1"><i class="fa fa-check"></i><b>4.3.2</b> 2. Import data</a></li>
+<li class="chapter" data-level="4.3.3" data-path="split-plot-designs.html"><a href="split-plot-designs.html#check-and-update-data-1"><i class="fa fa-check"></i><b>4.3.3</b> 3. Check and update data</a></li>
+<li class="chapter" data-level="4.3.4" data-path="split-plot-designs.html"><a href="split-plot-designs.html#explore-data-1"><i class="fa fa-check"></i><b>4.3.4</b> 4. Explore data</a></li>
+<li class="chapter" data-level="4.3.5" data-path="split-plot-designs.html"><a href="split-plot-designs.html#plots-1"><i class="fa fa-check"></i><b>4.3.5</b> Plots</a></li>
+<li class="chapter" data-level="4.3.6" data-path="split-plot-designs.html"><a href="split-plot-designs.html#summary-statistics-1"><i class="fa fa-check"></i><b>4.3.6</b> Summary Statistics</a></li>
+<li class="chapter" data-level="4.3.7" data-path="split-plot-designs.html"><a href="split-plot-designs.html#specify-a-model-for-data-1"><i class="fa fa-check"></i><b>4.3.7</b> 5. Specify a model for data</a></li>
+<li class="chapter" data-level="4.3.8" data-path="split-plot-designs.html"><a href="split-plot-designs.html#check-the-model-1"><i class="fa fa-check"></i><b>4.3.8</b> 6. Check the model</a></li>
+<li class="chapter" data-level="4.3.9" data-path="split-plot-designs.html"><a href="split-plot-designs.html#interpret-model-1"><i class="fa fa-check"></i><b>4.3.9</b> 7. Interpret Model</a></li>
+<li class="chapter" data-level="4.3.10" data-path="split-plot-designs.html"><a href="split-plot-designs.html#present-the-results-from-the-model-1"><i class="fa fa-check"></i><b>4.3.10</b> 8. Present the results from the model</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="split-plot-designs.html"><a href="split-plot-designs.html#section-3-methodological-principles-1"><i class="fa fa-check"></i><b>4.4</b> Section 3 – Methodological Principles</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html"><i class="fa fa-check"></i><b>5</b> Adjusting for Covariates</a><ul>
+<li class="chapter" data-level="5.1" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#about-the-data-2"><i class="fa fa-check"></i><b>5.1</b> About the data</a></li>
+<li class="chapter" data-level="5.2" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#section-1-steps-in-analysis-using-r-2"><i class="fa fa-check"></i><b>5.2</b> Section 1: Steps in analysis using R</a></li>
+<li class="chapter" data-level="5.3" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#section-2-explanation-of-steps-2"><i class="fa fa-check"></i><b>5.3</b> Section 2: Explanation of Steps</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#install-r-packages-needed-2"><i class="fa fa-check"></i><b>5.3.1</b> 1. Install R packages needed</a></li>
+<li class="chapter" data-level="5.3.2" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#import-data-2"><i class="fa fa-check"></i><b>5.3.2</b> 2. Import data</a></li>
+<li class="chapter" data-level="5.3.3" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#check-and-update-data-2"><i class="fa fa-check"></i><b>5.3.3</b> 3. Check and update data</a></li>
+<li class="chapter" data-level="5.3.4" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#explore-data-2"><i class="fa fa-check"></i><b>5.3.4</b> 4. Explore data</a></li>
+<li class="chapter" data-level="5.3.5" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#specify-a-model-for-data-2"><i class="fa fa-check"></i><b>5.3.5</b> 5. Specify a model for data</a></li>
+<li class="chapter" data-level="5.3.6" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#check-the-model-2"><i class="fa fa-check"></i><b>5.3.6</b> 6. Check the model</a></li>
+<li class="chapter" data-level="5.3.7" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#interpret-model-2"><i class="fa fa-check"></i><b>5.3.7</b> 7. Interpret Model</a></li>
+<li class="chapter" data-level="5.3.8" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#present-the-results-from-the-model-2"><i class="fa fa-check"></i><b>5.3.8</b> 8. Present the results from the model</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="adjusting-for-covariates.html"><a href="adjusting-for-covariates.html#section-3-methodological-principles-2"><i class="fa fa-check"></i><b>5.4</b> Section 3 – Methodological Principles</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="relay-planting-example.html"><a href="relay-planting-example.html"><i class="fa fa-check"></i><b>6</b> Relay Planting Example</a><ul>
+<li class="chapter" data-level="6.1" data-path="relay-planting-example.html"><a href="relay-planting-example.html#section-1-steps-in-analysis-using-r-3"><i class="fa fa-check"></i><b>6.1</b> Section 1: Steps in analysis using R</a></li>
+<li class="chapter" data-level="6.2" data-path="relay-planting-example.html"><a href="relay-planting-example.html#section-2-explanation-of-steps-3"><i class="fa fa-check"></i><b>6.2</b> Section 2: Explanation of Steps</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="relay-planting-example.html"><a href="relay-planting-example.html#install-r-packages-needed-3"><i class="fa fa-check"></i><b>6.2.1</b> 1. Install R packages needed</a></li>
+<li class="chapter" data-level="6.2.2" data-path="relay-planting-example.html"><a href="relay-planting-example.html#import-data-3"><i class="fa fa-check"></i><b>6.2.2</b> 2. Import data</a></li>
+<li class="chapter" data-level="6.2.3" data-path="relay-planting-example.html"><a href="relay-planting-example.html#check-and-update-data-3"><i class="fa fa-check"></i><b>6.2.3</b> 3. Check and update data</a></li>
+<li class="chapter" data-level="6.2.4" data-path="relay-planting-example.html"><a href="relay-planting-example.html#explore-data-3"><i class="fa fa-check"></i><b>6.2.4</b> 4. Explore data</a></li>
+<li class="chapter" data-level="6.2.5" data-path="relay-planting-example.html"><a href="relay-planting-example.html#specify-a-model-for-data-3"><i class="fa fa-check"></i><b>6.2.5</b> 5. Specify a model for data</a></li>
+<li class="chapter" data-level="6.2.6" data-path="relay-planting-example.html"><a href="relay-planting-example.html#check-the-model-3"><i class="fa fa-check"></i><b>6.2.6</b> 6. Check the model</a></li>
+<li class="chapter" data-level="6.2.7" data-path="relay-planting-example.html"><a href="relay-planting-example.html#interpret-model-3"><i class="fa fa-check"></i><b>6.2.7</b> 7. Interpret Model</a></li>
+<li class="chapter" data-level="6.2.8" data-path="relay-planting-example.html"><a href="relay-planting-example.html#present-the-results-from-the-model-3"><i class="fa fa-check"></i><b>6.2.8</b> 8. Present the results from the model</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="relay-planting-example.html"><a href="relay-planting-example.html#section-3-methodological-principles-3"><i class="fa fa-check"></i><b>6.3</b> Section 3 – Methodological Principles</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html"><i class="fa fa-check"></i><b>7</b> Multi-Environment Trial Analysis</a><ul>
+<li class="chapter" data-level="7.1" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#section-1-steps-in-analysis-using-r-4"><i class="fa fa-check"></i><b>7.1</b> Section 1: Steps in analysis using R</a></li>
+<li class="chapter" data-level="7.2" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#section-2-explanation-of-steps-4"><i class="fa fa-check"></i><b>7.2</b> Section 2: Explanation of Steps</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#install-r-packages-needed-4"><i class="fa fa-check"></i><b>7.2.1</b> 1. Install R packages needed</a></li>
+<li class="chapter" data-level="7.2.2" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#import-data-4"><i class="fa fa-check"></i><b>7.2.2</b> 2. Import data</a></li>
+<li class="chapter" data-level="7.2.3" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#check-and-update-data-4"><i class="fa fa-check"></i><b>7.2.3</b> 3. Check and update data</a></li>
+<li class="chapter" data-level="7.2.4" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#explore-data-4"><i class="fa fa-check"></i><b>7.2.4</b> 4. Explore data</a></li>
+<li class="chapter" data-level="7.2.5" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#specify-a-model-for-data-4"><i class="fa fa-check"></i><b>7.2.5</b> 5. Specify a model for data</a></li>
+<li class="chapter" data-level="7.2.6" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#check-the-model-4"><i class="fa fa-check"></i><b>7.2.6</b> 6. Check the model</a></li>
+<li class="chapter" data-level="7.2.7" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#interpret-model-4"><i class="fa fa-check"></i><b>7.2.7</b> 7. Interpret Model</a></li>
+<li class="chapter" data-level="7.2.8" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#present-the-results-from-the-model-4"><i class="fa fa-check"></i><b>7.2.8</b> 8. Present the results from the model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="multi-environment-trial-analysis.html"><a href="multi-environment-trial-analysis.html#section-3-methodological-principles-4"><i class="fa fa-check"></i><b>7.3</b> Section 3 – Methodological Principles</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Analysis of Common Agricultural Designs in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="relay-planting-example" class="section level1">
+<h1><span class="header-section-number">Chapter 6</span> Relay Planting Example</h1>
+<div id="section-1-steps-in-analysis-using-r-3" class="section level2">
+<h2><span class="header-section-number">6.1</span> Section 1: Steps in analysis using R</h2>
+<ol style="list-style-type: decimal">
+<li>Install R packages needed</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(emmeans)
+<span class="kw">library</span>(doBy)
+<span class="kw">library</span>(lmerTest)
+<span class="kw">library</span>(multcompView)</code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Import data</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">relay &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;C:/Users/Admin/Desktop/RelayP.csv&quot;</span>)</code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Check and update data</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(relay)
+<span class="kw">str</span>(relay)
+relay<span class="op">$</span>fert&lt;-<span class="kw">factor</span>(relay<span class="op">$</span>fert)</code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>Explore data</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>relay,<span class="kw">aes</span>(<span class="dt">y=</span>grain,<span class="dt">x=</span>fert))<span class="op">+</span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">colour=</span>plantime))
+
+<span class="kw">ggplot</span>(<span class="dt">data=</span>relay,<span class="kw">aes</span>(<span class="dt">y=</span>grain,<span class="dt">x=</span>plantime))<span class="op">+</span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">colour=</span>fert))
+
+<span class="kw">summaryBy</span>(grain<span class="op">~</span>fert<span class="op">+</span>plantime, <span class="dt">data=</span>relay, <span class="dt">FUN=</span><span class="kw">c</span>(mean,median,sd))</code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li>Specify a model for data</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">relaymodel&lt;-<span class="kw">lmer</span>(grain<span class="op">~</span>plantime<span class="op">*</span>fert<span class="op">+</span>(<span class="dv">1</span><span class="op">|</span>rep), <span class="dt">data=</span>RelayP)</code></pre></div>
+<ol start="6" style="list-style-type: decimal">
+<li>Check the model</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(relaymodel)
+
+<span class="kw">qqnorm</span>(<span class="kw">resid</span>(relaymodel))
+<span class="kw">qqline</span>(<span class="kw">resid</span>(relaymodel))</code></pre></div>
+<ol start="7" style="list-style-type: decimal">
+<li>Interpret the model</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(relaymodel, <span class="dt">ddf=</span><span class="st">&quot;Kenward-Roger&quot;</span>)
+<span class="kw">print</span>(<span class="kw">VarCorr</span>(relaymodel), <span class="dt">comp=</span>(<span class="st">&quot;Variance&quot;</span>))</code></pre></div>
+<ol start="8" style="list-style-type: decimal">
+<li>Present the results from the model</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmip</span>(relaymodel,fert<span class="op">~</span>plantime,<span class="dt">CIs =</span> <span class="ot">TRUE</span>)
+<span class="kw">emmip</span>(relaymodel,<span class="op">~</span>fert,<span class="dt">CIs =</span> <span class="ot">TRUE</span>)
+<span class="kw">emmip</span>(relaymodel,<span class="op">~</span>plantime,<span class="dt">CIs =</span> <span class="ot">TRUE</span>)
+<span class="kw">emmeans</span>(relaymodel, <span class="op">~</span>fert<span class="op">*</span>plantime)</code></pre></div>
+</div>
+<div id="section-2-explanation-of-steps-3" class="section level2">
+<h2><span class="header-section-number">6.2</span> Section 2: Explanation of Steps</h2>
+<div id="install-r-packages-needed-3" class="section level3">
+<h3><span class="header-section-number">6.2.1</span> 1. Install R packages needed</h3>
+<p>A number of packages following packages were used during data exploration and analysis. For a general introduction explaining what R packages are and how they work, this is a really useful guide <a href="https://www.datacamp.com/community/tutorials/r-packages-guide" class="uri">https://www.datacamp.com/community/tutorials/r-packages-guide</a>. For each of these packages to be installed, using install.packages(), this requires a reliable internet connection and a correctly installed version of R and RStudio. If you are having difficulties installing these packages please ask for help.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ggplot2&quot;</span>)
+<span class="kw">library</span>(ggplot2)</code></pre></div>
+<p><code>ggplot2</code> This package provides a powerful graphics language for creating elegant and complex graphs in R.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;emmeans&quot;</span>)
+<span class="kw">library</span>(emmeans)</code></pre></div>
+<p><code>emmeans</code> Estimated marginal means (also known as least squares means) helps provide expected mean values and confidence intervals from statistical models.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;doBy&quot;</span>)
+<span class="kw">library</span>(doBy)</code></pre></div>
+<p><code>doBy</code>Allows easy production of summary statistic tables</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;lmerTest&quot;</span>)
+<span class="kw">library</span>(lmerTest)</code></pre></div>
+<p><code>lmerTest</code> Allows produce of flexible mixed effects regression models, similar to REML in Genstat.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;multcompView&quot;</span>)
+<span class="kw">library</span>(multcompView)</code></pre></div>
+<p><code>multcompView</code> allows for mean seperation methods on analyses</p>
+</div>
+<div id="import-data-3" class="section level3">
+<h3><span class="header-section-number">6.2.2</span> 2. Import data</h3>
+<p>Our data set saved as a CSV file, so we can use the read.csv commmand to import the data. We are going to assign the name of the data with R to be <code>fallow2</code>. Remember in R Studio you could also use the “Import Dataset” menu to import a dataset.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">relay &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;C:/Users/Admin/Desktop/RelayP.csv&quot;</span>)</code></pre></div>
+</div>
+<div id="check-and-update-data-3" class="section level3">
+<h3><span class="header-section-number">6.2.3</span> 3. Check and update data</h3>
+<p>When reading data into R it is always useful to check that data is in the format expected. How many variables are there? How many rows? How have the columns been read in? The summary command can help to show if the data is being treated correctly.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(relay)</code></pre></div>
+<pre><code>##      rep          plot       plantime       fert        distance    
+##  repl 1:27   plot 1 : 3   control: 9   Min.   :  0   Min.   : 0.00  
+##  repl 2:27   plot 10: 3   p1     :18   1st Qu.:  0   1st Qu.: 8.00  
+##  repl 3:27   plot 11: 3   p2     :18   Median : 50   Median :16.00  
+##              plot 12: 3   p3     :18   Mean   : 50   Mean   :15.78  
+##              plot 13: 3   p4     :18   3rd Qu.:100   3rd Qu.:23.00  
+##              plot 14: 3                Max.   :100   Max.   :31.00  
+##              (Other):63                                             
+##      grain      
+##  Min.   :0.642  
+##  1st Qu.:1.905  
+##  Median :5.104  
+##  Mean   :4.399  
+##  3rd Qu.:6.085  
+##  Max.   :8.614  
+## </code></pre>
+<p>Where data is being treated as a numeric variable (i.e. a number) <code>summary</code> provides statistics like the mean, min and max. Where data is being treated like a categorical variable (i.e. a group) then summary provides frequency tables.</p>
+<p>From the results we can see that the variables rep and plot are being considered as numeric variables. However these are grouping variables, not number variables, the numbers used are simply codes. If we do not rectify this then our analysis later will be incorrect and meaningless.<br />
+This can also be seen more explicitly using the str() function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(relay)</code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    81 obs. of  6 variables:
+##  $ rep     : Factor w/ 3 levels &quot;repl 1&quot;,&quot;repl 2&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ plot    : Factor w/ 27 levels &quot;plot 1&quot;,&quot;plot 10&quot;,..: 1 12 21 22 23 24 25 26 27 2 ...
+##  $ plantime: Factor w/ 5 levels &quot;control&quot;,&quot;p1&quot;,..: 5 5 4 1 5 4 3 5 5 1 ...
+##  $ fert    : int  50 0 50 100 100 0 0 50 0 0 ...
+##  $ distance: int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ grain   : num  6.84 2.44 5.2 6.49 6.08 ...</code></pre>
+<p>So we need to convert these variables into factors.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">relay<span class="op">$</span>fert&lt;-<span class="kw">factor</span>(relay<span class="op">$</span>fert)</code></pre></div>
+<p>These commands take the column rep within the data frame fallow, converts into a factor and saves the result in a column called rep within fallow.</p>
+</div>
+<div id="explore-data-3" class="section level3">
+<h3><span class="header-section-number">6.2.4</span> 4. Explore data</h3>
+<div id="plots-3" class="section level4">
+<h4><span class="header-section-number">6.2.4.1</span> Plots</h4>
+<p>We are now interesting in assessing the relationship between yield and striga - so we want to produce a plot of striga against yield, with different coloured points denoting each treatment.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>relay,<span class="kw">aes</span>(<span class="dt">y=</span>grain,<span class="dt">x=</span>fert))<span class="op">+</span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">colour=</span>plantime))</code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-118-1.png" width="672" /> We can see from the distribution of striga that there are some farms with very high levels of striga, and some farms with no striga. The big range of values makes it hard to make interpretations from this plot, so taking a square root transformation may help to visualise the relationship. A log transformation will not help here because of the large number of 0 values of striga.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data=</span>relay,<span class="kw">aes</span>(<span class="dt">y=</span>grain,<span class="dt">x=</span>plantime))<span class="op">+</span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">colour=</span>fert))</code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-119-1.png" width="672" /></p>
+</div>
+<div id="summary-statistics-2" class="section level4">
+<h4><span class="header-section-number">6.2.4.2</span> Summary Statistics</h4>
+<p>To produce summary statistics, by group, there are many options within R. One option is to use the summaryBy function, from the doBy library. The code used for this is quite similar to the code we will use to produce models in a later step.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summaryBy</span>(grain<span class="op">~</span>fert<span class="op">+</span>plantime, <span class="dt">data=</span>relay, <span class="dt">FUN=</span><span class="kw">c</span>(mean,median,sd))</code></pre></div>
+<pre><code>##    fert plantime grain.mean grain.median  grain.sd
+## 1     0  control   1.052333       1.0340 0.4198003
+## 2     0       p1   2.055333       1.7495 0.9954934
+## 3     0       p2   1.559667       1.4835 0.8458025
+## 4     0       p3   1.457000       1.4465 0.3850964
+## 5     0       p4   1.474500       1.1820 0.6817175
+## 6    50  control   4.769000       3.5660 2.3196256
+## 7    50       p1   5.890000       5.5995 1.5543606
+## 8    50       p2   5.592000       5.6170 1.1410732
+## 9    50       p3   4.804333       4.9295 1.1960488
+## 10   50       p4   5.030500       4.8130 1.1319579
+## 11  100  control   5.831667       5.8200 0.6525782
+## 12  100       p1   6.934000       6.7720 1.0728338
+## 13  100       p2   6.603667       6.3615 0.8626484
+## 14  100       p3   6.272167       5.7760 1.2615166
+## 15  100       p4   5.890833       5.7235 0.8759115</code></pre>
+</div>
+</div>
+<div id="specify-a-model-for-data-3" class="section level3">
+<h3><span class="header-section-number">6.2.5</span> 5. Specify a model for data</h3>
+<p>In this design, an RCBD, we have one treatment factor, “treat”, and one layout factor “rep”. More information about model fitting can be found in section 2.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">relaymodel&lt;-<span class="kw">lmer</span>(grain<span class="op">~</span>plantime<span class="op">*</span>fert<span class="op">+</span>(<span class="dv">1</span><span class="op">|</span>rep), <span class="dt">data=</span>relay)</code></pre></div>
+<p>R is unlike many other software packages in how it fits models. The best way of handling models in R is to assign the model to a name (in this case rcbdmodel1) and then ask R to provide different sorts of output for this model. When you run the above line you will get now output from the data - this is what we expected to see!</p>
+</div>
+<div id="check-the-model-3" class="section level3">
+<h3><span class="header-section-number">6.2.6</span> 6. Check the model</h3>
+<p>Before interpretting the model any further we should investigate the model validity, to ensure any conclusions we draw are valid. There are 3 assumptions that we can check for using standard model checking plots. 1. Homogeneity (equal variance) 2. Values with high leverage 3. Normality of residuals</p>
+<p>The function plot() when used with a model will plot the fitted values from the model against the expected values.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(relaymodel)</code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-122-1.png" width="672" /> The residual Vs fitted plot is a scatter plot of the Residuals on the y-axis and the fitted on the x-axis and the aim for this plot is to test the assumption of equal variance of the residuals across the range of fitted values. Since the residuals do not funnel out (to form triangular/diamond shape) the assumption of equal variance is met.</p>
+<p>We can also see that there are no extreme values in the residuals which might be potentially causing problems with the validity of our conclusions (leverage)</p>
+<p>To assess the assumption of normality we can produce a qqplot. This shows us how closely the residuals follow a normal distribution - if there are severe and syste,matic deviations from the line then we may want to consider an alternative distribution.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">qqnorm</span>(<span class="kw">resid</span>(relaymodel))
+<span class="kw">qqline</span>(<span class="kw">resid</span>(relaymodel))</code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-123-1.png" width="672" /> In this case the residuals seem to fit the assumption required for normality.</p>
+</div>
+<div id="interpret-model-3" class="section level3">
+<h3><span class="header-section-number">6.2.7</span> 7. Interpret Model</h3>
+<p>The anova() function only prints the rows of analysis of variance table for treatment effects when looking at a mixed model fitted using lmer().</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(relaymodel,<span class="dt">ddf=</span><span class="st">&quot;Kenward-Roger&quot;</span>)</code></pre></div>
+<pre><code>## Type III Analysis of Variance Table with Kenward-Roger&#39;s method
+##                Sum Sq Mean Sq NumDF DenDF  F value  Pr(&gt;F)    
+## plantime       10.832   2.708     4    64   2.6160 0.04321 *  
+## fert          314.749 157.374     2    64 152.0239 &lt; 2e-16 ***
+## plantime:fert   1.381   0.173     8    64   0.1668 0.99451    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>ddf=Kenward-Roger tells R which method to use for determining the calculations of the table; this option matches the defaults found within SAS or Genstat. The ANOVA table suggests a highly significant effect of the treatment on the yield.</p>
+<p>To obtain the residual variance, and the variance attributed to the blocks we need an additional command. From these number it is possible to reconstruct a more classic ANOVA table, if so desired.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">VarCorr</span>(relaymodel), <span class="dt">comp=</span>(<span class="st">&quot;Variance&quot;</span>))</code></pre></div>
+<pre><code>##  Groups   Name        Variance
+##  rep      (Intercept) 0.16034 
+##  Residual             1.03519</code></pre>
+</div>
+<div id="present-the-results-from-the-model-3" class="section level3">
+<h3><span class="header-section-number">6.2.8</span> 8. Present the results from the model</h3>
+<p>To help understand what the significant result from the ANOVA table means we can produce several plots and tables to help us. First we can use the function emmip() to produce plots of the modelled results, including 95% confidence intervals.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmip</span>(relaymodel,fert<span class="op">~</span>plantime,<span class="dt">CIs =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-126-1.png" width="672" /></p>
+<p>Or alternatively</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmip</span>(relaymodel,<span class="op">~</span>fert,<span class="dt">CIs =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-127-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmip</span>(relaymodel,<span class="op">~</span>plantime,<span class="dt">CIs =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-127-2.png" width="672" /></p>
+<p>To obtain the numbers used in creating this graph we can use the function emmeans.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">emmeans</span>(relaymodel, <span class="op">~</span>fert<span class="op">*</span>plantime)</code></pre></div>
+<pre><code>##  fert plantime   emmean       SE    df   lower.CL upper.CL
+##  0    control  1.052333 0.631278 40.53 -0.2230062 2.327673
+##  50   control  4.769000 0.631278 40.53  3.4936605 6.044339
+##  100  control  5.831667 0.631278 40.53  4.5563272 7.107006
+##  0    p1       2.055333 0.475373 19.70  1.0627645 3.047902
+##  50   p1       5.890000 0.475373 19.70  4.8974312 6.882569
+##  100  p1       6.934000 0.475373 19.70  5.9414312 7.926569
+##  0    p2       1.559667 0.475373 19.70  0.5670979 2.552235
+##  50   p2       5.592000 0.475373 19.70  4.5994312 6.584569
+##  100  p2       6.603667 0.475373 19.70  5.6110979 7.596235
+##  0    p3       1.457000 0.475373 19.70  0.4644312 2.449569
+##  50   p3       4.804333 0.475373 19.70  3.8117645 5.796902
+##  100  p3       6.272167 0.475373 19.70  5.2795979 7.264735
+##  0    p4       1.474500 0.475373 19.70  0.4819312 2.467069
+##  50   p4       5.030500 0.475373 19.70  4.0379312 6.023069
+##  100  p4       5.890833 0.475373 19.70  4.8982645 6.883402
+## 
+## Degrees-of-freedom method: kenward-roger 
+## Confidence level used: 0.95</code></pre>
+<p>And one method for conducting mean separation analysis, holding striga effect constant, we can use the function cld().</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cld</span>(<span class="kw">emmeans</span>(relaymodel, <span class="op">~</span>fert))</code></pre></div>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre><code>##  fert   emmean        SE   df  lower.CL upper.CL .group
+##  0    1.519767 0.3079851 4.08 0.6711501 2.368383  1    
+##  50   5.217167 0.3079851 4.08 4.3685501 6.065783   2   
+##  100  6.306467 0.3079851 4.08 5.4578501 7.155083    3  
+## 
+## Results are averaged over the levels of: plantime 
+## Degrees-of-freedom method: kenward-roger 
+## Confidence level used: 0.95 
+## P value adjustment: tukey method for comparing a family of 3 estimates 
+## significance level used: alpha = 0.05</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cld</span>(<span class="kw">emmeans</span>(relaymodel, <span class="op">~</span>plantime))</code></pre></div>
+<pre><code>## NOTE: Results may be misleading due to involvement in interactions</code></pre>
+<pre><code>##  plantime   emmean        SE    df lower.CL upper.CL .group
+##  control  3.884333 0.4104494 12.04 2.990409 4.778257  1    
+##  p4       4.131944 0.3331034  5.54 3.299984 4.963905  1    
+##  p3       4.177833 0.3331034  5.54 3.345873 5.009794  1    
+##  p2       4.585111 0.3331034  5.54 3.753151 5.417071  1    
+##  p1       4.959778 0.3331034  5.54 4.127817 5.791738  1    
+## 
+## Results are averaged over the levels of: fert 
+## Degrees-of-freedom method: kenward-roger 
+## Confidence level used: 0.95 
+## P value adjustment: tukey method for comparing a family of 5 estimates 
+## significance level used: alpha = 0.05</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cld</span>(<span class="kw">emmeans</span>(relaymodel, <span class="op">~</span>fert<span class="op">*</span>plantime))</code></pre></div>
+<pre><code>##  fert plantime   emmean       SE    df   lower.CL upper.CL .group
+##  0    control  1.052333 0.631278 40.53 -0.2230062 2.327673  1    
+##  0    p3       1.457000 0.475373 19.70  0.4644312 2.449569  1    
+##  0    p4       1.474500 0.475373 19.70  0.4819312 2.467069  1    
+##  0    p2       1.559667 0.475373 19.70  0.5670979 2.552235  1    
+##  0    p1       2.055333 0.475373 19.70  1.0627645 3.047902  1    
+##  50   control  4.769000 0.631278 40.53  3.4936605 6.044339   23  
+##  50   p3       4.804333 0.475373 19.70  3.8117645 5.796902   2   
+##  50   p4       5.030500 0.475373 19.70  4.0379312 6.023069   23  
+##  50   p2       5.592000 0.475373 19.70  4.5994312 6.584569   23  
+##  100  control  5.831667 0.631278 40.53  4.5563272 7.107006   23  
+##  50   p1       5.890000 0.475373 19.70  4.8974312 6.882569   23  
+##  100  p4       5.890833 0.475373 19.70  4.8982645 6.883402   23  
+##  100  p3       6.272167 0.475373 19.70  5.2795979 7.264735   23  
+##  100  p2       6.603667 0.475373 19.70  5.6110979 7.596235   23  
+##  100  p1       6.934000 0.475373 19.70  5.9414312 7.926569    3  
+## 
+## Degrees-of-freedom method: kenward-roger 
+## Confidence level used: 0.95 
+## P value adjustment: tukey method for comparing a family of 15 estimates 
+## significance level used: alpha = 0.05</code></pre>
+<p>In the output, groups sharing a letter in the .group are not statistically different from each other.</p>
+</div>
+</div>
+<div id="section-3-methodological-principles-3" class="section level2">
+<h2><span class="header-section-number">6.3</span> Section 3 – Methodological Principles</h2>
+<p>When adjusting for covariates it is important to consider if the covariate being included is something that could be affected by the treatment variables, or whether it is something which affects the outcome independent of the treatments. If we were confident that striga infestation was not impacted by the choice of treatment then in this analysis</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="adjusting-for-covariates.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="multi-environment-trial-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/05-relayplanting.Rmd",
+"text": "Edit"
+},
+"download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
